@@ -11,7 +11,7 @@ public class Game {
     private final List<Player> players;
     private final Board board;
     private int currentPlayerIndex;
-    private final boolean gameOver;
+    private boolean gameOver;
 
     public Game(int numPlayers) {
         players = new ArrayList<>();
@@ -32,29 +32,28 @@ public class Game {
             }
         }
     }
-
-    private void IndiansCard(Player currentPlayer) {
+    private void announceWinner() {
         for (Player player : players) {
-            if (player != currentPlayer && player.isAlive()) {
-                boolean isShootCard = false;
-                for (Card card : player.getHand()) {
-                    if (card instanceof Bang) {
-                        player.removeFromHand(card);
-                        System.out.println(player.getName() + " used the bang card to prevent an attack of Indians");
-                        isShootCard = true;
-                        break;
-                    }
-                }
-                if (!isShootCard){
-                    System.out.println(player.getName() + " lost 1 health point because of the Indians attack");
-                    if (!player.isAlive()) {
-                        System.out.println(player.getName() + " is out of the game");
-                    }
-                }
+            if (player.isAlive()) {
+                System.out.println(player.getName() + " wins the game!");
+                return;
             }
         }
-    }
 
+        System.out.println("It's a draw!");
+    }
+    private void checkGameOver() {
+        int alivePlayers = 0;
+        for (Player player : players) {
+            if (player.isAlive()) {
+                alivePlayers++;
+            }
+        }
+
+        if (alivePlayers <= 1) {
+            gameOver = true;
+        }
+    }
     public void playGame() {
         while (!gameOver) {
 
@@ -64,22 +63,36 @@ public class Game {
                 continue;
             }
             System.out.println("It's " + currentPlayer.getName() + "'s turn.");
-            System.out.println("You have " + currentPlayer.getHealth() + " lives");
-            System.out.print("Your hand: \n");
-            List<Card> hand = currentPlayer.getHand();
-            for (int i = 0; i < hand.size(); i++) {
-                System.out.print((i + 1) + "." + hand.get(i).getName() + "\n");
+            if (currentPlayer.hasPrison()) {
+                int escapeChance = (int) (Math.random() * 4) + 1;
+                if (escapeChance == 1) {
+                    System.out.println(currentPlayer.getName() + " has escaped from prison!");
+                    currentPlayer.removePrison();
+                } else {
+                    System.out.println(currentPlayer.getName() + " is still in prison and skips their turn.");
+                    currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+                    continue;
+                }
             }
-            System.out.println();
+            System.out.println("You have " + currentPlayer.getHealth() + " lives");
+            for (int i = 0; i < 2; i++) {
+                currentPlayer.addToHand(board.draw());
+            }
+            List<Card> hand = currentPlayer.getHand();
 
-            currentPlayer.addToHand(board.draw());
-            boolean hasPlayedCard = false;
-            while (!hasPlayedCard) {
+            while (!hand.isEmpty()) {
+                System.out.print("Your hand: \n");
+                for (int i = 0; i < hand.size(); i++) {
+                    System.out.print((i + 1) + "." + hand.get(i).getName() + "\n");
+                }
+                System.out.println();
                 int cardIndex = ZKlavesnice.readInt("Select a card to play 1-" + hand.size() + " or any other number to skip: ") - 1;
+
                 if (cardIndex < 0 || cardIndex >= hand.size()) {
-                    break;
+                 break;
                 } else {
                     Card card = hand.get(cardIndex);
+
                     if (card instanceof Bang) {
                         int targetIndex = ZKlavesnice.readInt("Select a player to shoot 1-" + players.size() + ": ") - 1;
                         if (targetIndex < 0 || targetIndex >= players.size() || targetIndex == currentPlayerIndex) {
@@ -102,54 +115,62 @@ public class Game {
 
                             } else {
                                 System.out.println("Miss card not found in player's hand. And" + targetPlayer.getName() + " loses 1 health point.");
-                                card.use(targetPlayer);
+                                card.use(currentPlayer,targetPlayer, board,players);
                                 currentPlayer.removeFromHand(card);
                                 System.out.println(currentPlayer.getName() + " shot " + targetPlayer.getName() + ".\n");
-                                hasPlayedCard = true;
+
                             }
 
                         }
                     } else if (card instanceof Beer) {
-                        card.use(currentPlayer);
+                        card.use(currentPlayer, null, board, players);
                         currentPlayer.removeFromHand(card);
                         System.out.println(currentPlayer.getName() + " drank beer🍻.");
-                        hasPlayedCard = true;
 
                     } else if (card instanceof Stagecoach) {
-                        card.use(currentPlayer);
+                        card.use(currentPlayer, null, board, players);
                         currentPlayer.removeFromHand(card);
                         System.out.println(currentPlayer.getName() + " took 2 cards from deck.");
-                        currentPlayer.discardCards(currentPlayer);
-                        hasPlayedCard = true;
-                    } else if (card instanceof Indians) {
-                        IndiansCard(currentPlayer);
+
+                    }if (card instanceof Prison) {
+                        int targetIndex = ZKlavesnice.readInt("Select a player to put in prison 1-" + players.size() + ": ") - 1;
+                        if (targetIndex < 0 || targetIndex >= players.size() || targetIndex == currentPlayerIndex) {
+                            System.out.println("Invalid player.");
+                        } else {
+                            Player targetPlayer = players.get(targetIndex);
+                            card.use(currentPlayer, targetPlayer, board, players);
+                            currentPlayer.removeFromHand(card);
+                        }
+                    }
+                    else if (card instanceof Indians) {
+                        card.use(currentPlayer,null, board, players);
                         currentPlayer.removeFromHand(card);
                         System.out.println(currentPlayer.getName() + " Indians attack, you better protect yourself!");
-                        currentPlayer.discardCards(currentPlayer);
-                        hasPlayedCard = true;
                     }else if (card instanceof CatBalou) {
                         int targetIndex = ZKlavesnice.readInt("Select a player to  1-" + players.size() + ": ") - 1;
                         if (targetIndex < 0 || targetIndex >= players.size() || targetIndex == currentPlayerIndex) {
                             System.out.println("Invalid player.");
                         } else {
                             Player targetPlayer = players.get(targetIndex);
-                            card.use(targetPlayer);
+                            card.use(currentPlayer,targetPlayer, board, players);
                             currentPlayer.removeFromHand(card);
                             System.out.println(currentPlayer.getName() + " removed a card from " + targetPlayer.getName() + "'s hand.\n");
-                            hasPlayedCard = true;
+
                         }
-                    }
+                        currentPlayer.discardCards(currentPlayer);
 
                 }
 
             }
+
+        }
+            checkGameOver();
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
             System.out.println("════════════════════════════════════════════════════");
-        }
     }
-}
+        announceWinner();
+}}
 
-//TODO: конец игры
-//TODO: исправить ошибку при окончании коллоды
+
 
 

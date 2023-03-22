@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sk.stuba.fei.uim.oop.card.Card;
+import sk.stuba.fei.uim.oop.card.Prison;
+
 public class Player {
     private  String name;
     private int health;
     private List<Card> hand;
-
+    private Prison prison;
     public Player(String name) {
         this.name = name;
         this.health = 4;
         this.hand = new ArrayList<>();
     }
-
     public String getName() {
         return name;
     }
@@ -53,8 +54,23 @@ public class Player {
         hand.remove(card);
     }
 
+
     public boolean isAlive() {
         return health > 0;
+    }
+    public Prison getPrison(){
+        return prison;
+    }
+
+    public void setPrison(Prison prison) {
+        this.prison = prison;
+    }
+    public boolean hasPrison() {
+        return prison != null;
+    }
+
+    public void removePrison() {
+        prison = null;
     }
 
     @Override

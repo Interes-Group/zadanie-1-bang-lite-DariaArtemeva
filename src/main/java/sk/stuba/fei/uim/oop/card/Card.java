@@ -1,5 +1,9 @@
 package sk.stuba.fei.uim.oop.card;
+import sk.stuba.fei.uim.oop.board.Board;
 import sk.stuba.fei.uim.oop.player.Player;
+
+import java.util.List;
+
 public abstract class Card {
     private final String name;
 
@@ -13,6 +17,5 @@ public abstract class Card {
         return name;
     }
 
-    public abstract void use(Player player);
-}
+    public abstract void use(Player currentPlayer, Player targetPlayer, Board board, List<Player> players);}
 
