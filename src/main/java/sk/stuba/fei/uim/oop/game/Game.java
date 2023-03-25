@@ -58,6 +58,21 @@ public class Game {
         while (!gameOver) {
 
             Player currentPlayer = players.get(currentPlayerIndex);
+            if (currentPlayer.hasDynamite()) {
+                int explosionChance = 8;
+                int roll = (int) (Math.random() * explosionChance) + 1;
+                if (roll == 1) {
+                    System.out.println("Dynamite explodes! " + currentPlayer.getName() + " loses 3 health points.");
+                    currentPlayer.decreaseHealth(3);
+                    currentPlayer.removeDynamite();
+                } else {
+                    System.out.println("Dynamite doesn't explode. Passing it to the next player.");
+                    currentPlayer.removeDynamite();
+                    int nextPlayerIndex = (currentPlayerIndex + 1) % players.size();
+                    Player nextPlayer = players.get(nextPlayerIndex);
+                    nextPlayer.setDynamite(new Dynamite());
+                }
+            }
             if (!currentPlayer.isAlive()) {
                 currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
                 continue;
@@ -99,40 +114,59 @@ public class Game {
                             System.out.println("Invalid player.");
                         } else {
                             Player targetPlayer = players.get(targetIndex);
-                            Miss missCard = null;
-                            for (Card targetCard : targetPlayer.getHand()) {
-                                if (targetCard instanceof Miss) {
-                                    missCard = (Miss) targetCard;
-                                    break;
+                            boolean shotBlocked = false;
+                            if (targetPlayer.hasBarrel()) {
+                                Barrel barrel = targetPlayer.getBarrel();
+                                shotBlocked = barrel.blocksShot();
+                                if (shotBlocked) {
+                                    System.out.println(targetPlayer.getName() + "'s Barrel card blocked the shot!");
                                 }
                             }
-                            if (missCard != null) {
-                                boolean defenseSuccessful = missCard.defend();
-                                if (defenseSuccessful) {
-                                    System.out.println("Miss card successfully defended against BANG attack!");
-                                    targetPlayer.removeFromHand(missCard);
+
+                            if (!shotBlocked) {
+                                Miss missCard = null;
+                                for (Card targetCard : targetPlayer.getHand()) {
+                                    if (targetCard instanceof Miss) {
+                                        missCard = (Miss) targetCard;
+                                        break;
+                                    }
                                 }
 
-                            } else {
-                                System.out.println("Miss card not found in player's hand. And" + targetPlayer.getName() + " loses 1 health point.");
-                                card.use(currentPlayer,targetPlayer, board,players);
-                                currentPlayer.removeFromHand(card);
-                                System.out.println(currentPlayer.getName() + " shot " + targetPlayer.getName() + ".\n");
-
+                                if (missCard != null) {
+                                    boolean defenseSuccessful = missCard.defend();
+                                    if (defenseSuccessful) {
+                                        System.out.println("Miss card successfully defended against BANG attack!");
+                                        targetPlayer.removeFromHand(missCard);
+                                    }
+                                } else {
+                                    System.out.println(targetPlayer.getName() + " loses 1 health point.");
+                                    card.use(currentPlayer, targetPlayer, board, players);
+                                    currentPlayer.removeFromHand(card);
+                                    System.out.println(currentPlayer.getName() + " shot " + targetPlayer.getName() + ".\n");
+                                }
                             }
-
                         }
                     } else if (card instanceof Beer) {
                         card.use(currentPlayer, null, board, players);
                         currentPlayer.removeFromHand(card);
                         System.out.println(currentPlayer.getName() + " drank beer🍻.");
 
-                    } else if (card instanceof Stagecoach) {
+                    } else if (card instanceof Dynamite) {
+                        int targetIndex = ZKlavesnice.readInt("Select a player to put in front of Dynamite 1-" + players.size() + ": ") - 1;
+                        if (targetIndex < 0 || targetIndex >= players.size() || targetIndex == currentPlayerIndex) {
+                            System.out.println("Invalid player.");
+                        } else {
+                            Player targetPlayer = players.get(targetIndex);
+                            card.use(currentPlayer, targetPlayer, board, players);
+                            currentPlayer.removeFromHand(card);
+                        }
+                    }
+                    else if (card instanceof Stagecoach) {
                         card.use(currentPlayer, null, board, players);
                         currentPlayer.removeFromHand(card);
                         System.out.println(currentPlayer.getName() + " took 2 cards from deck.");
 
-                    }if (card instanceof Prison) {
+                    }else if (card instanceof Prison) {
                         int targetIndex = ZKlavesnice.readInt("Select a player to put in prison 1-" + players.size() + ": ") - 1;
                         if (targetIndex < 0 || targetIndex >= players.size() || targetIndex == currentPlayerIndex) {
                             System.out.println("Invalid player.");

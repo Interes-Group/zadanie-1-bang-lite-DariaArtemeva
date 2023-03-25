@@ -3,7 +3,9 @@ package sk.stuba.fei.uim.oop.player;
 import java.util.ArrayList;
 import java.util.List;
 
+import sk.stuba.fei.uim.oop.card.Barrel;
 import sk.stuba.fei.uim.oop.card.Card;
+import sk.stuba.fei.uim.oop.card.Dynamite;
 import sk.stuba.fei.uim.oop.card.Prison;
 
 public class Player {
@@ -11,6 +13,8 @@ public class Player {
     private int health;
     private List<Card> hand;
     private Prison prison;
+    private Dynamite dynamite;
+    private Barrel barrel;
     public Player(String name) {
         this.name = name;
         this.health = 4;
@@ -54,7 +58,36 @@ public class Player {
         hand.remove(card);
     }
 
+    public Dynamite getDynamite() {
+        return dynamite;
+    }
 
+    public void setDynamite(Dynamite dynamite) {
+        this.dynamite = dynamite;
+    }
+
+    public boolean hasDynamite() {
+        return dynamite != null;
+    }
+
+    public void removeDynamite() {
+        dynamite = null;
+    }
+    public Barrel getBarrel() {
+        return barrel;
+    }
+
+    public void setBarrel(Barrel barrel) {
+        this.barrel = barrel;
+    }
+
+    public boolean hasBarrel() {
+        return barrel != null;
+    }
+
+    public void removeBarrel() {
+        barrel = null;
+    }
     public boolean isAlive() {
         return health > 0;
     }

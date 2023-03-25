@@ -10,7 +10,7 @@ public class Board {
 
     public Board() {
         cards = new ArrayList<Card>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 30; i++) {
             cards.add(new Bang());
         }
         for (int i = 0; i < 8; i++) {
@@ -19,7 +19,7 @@ public class Board {
         for (int i = 0; i < 4; i++) {
             cards.add(new Stagecoach());
         }
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 15; i++) {
             cards.add(new Miss());
         }
         for (int i = 0; i < 2; i++) {
@@ -30,6 +30,12 @@ public class Board {
         }
         for (int i = 0; i < 3; i++) {
             cards.add(new Prison());
+        }
+        for (int i = 0; i < 1; i++) {
+            cards.add(new Dynamite());
+        }
+        for (int i = 0; i < 2; i++) {
+            cards.add(new Barrel());
         }
     }
 
