@@ -11,7 +11,7 @@ public class Miss extends Card {
 
     @Override
     public void use(Player currentPlayer,Player targetPlayer,  Board board, List<Player> players) {
-        throw new UnsupportedOperationException("Miss card cannot be used directly by a player.");
+        System.out.println("Miss card cannot be played.");
     }
 
     public boolean defend() {
