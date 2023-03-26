@@ -12,7 +12,8 @@ public class Beer extends Card {
     }
 
     @Override
-    public void use(Player currentPlayer, Player targetPlayer, Board board, List<Player> players) {
-        currentPlayer.increaseHealth(1);
+    public void use(Player user, Player target, Board board, List<Player> players) {
+        user.increaseHealth(1);
+        System.out.println(user.getName() + " drank beer🍻 and got 1 health point.");
     }
 }

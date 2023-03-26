@@ -6,29 +6,29 @@ import sk.stuba.fei.uim.oop.player.Player;
 import java.util.List;
 
 public class Indians extends Card {
+
     public Indians() {
         super("Indians");
     }
 
     @Override
-    public void use(Player currentPlayer,Player targetPlayer, Board board, List<Player> players) {
+    public boolean requireTarget() {
+        return false;
+    }
+
+    @Override
+    public void use(Player user, Player target, Board board, List<Player> players) {
+        System.out.println(user.getName() + " played Indians card.");
+
         for (Player player : players) {
-            if (player != currentPlayer && player.isAlive()) {
-                boolean isShootCard = false;
-                for (Card card : player.getHand()) {
-                    if (card instanceof Bang) {
-                        player.removeFromHand(card);
-                        System.out.println(player.getName() + " used the bang card to prevent an attack of Indians");
-                        isShootCard = true;
-                        break;
-                    }
-                }
-                if (!isShootCard) {
-                    System.out.println(player.getName() + " lost 1 health point because of the Indians attack");
+            if (player != user) {
+                boolean defended = player.defendAgainstIndians();
+
+                if (!defended) {
+                    System.out.println(player.getName() + " failed to defend against Indians attack and loses 1 health point.");
                     player.decreaseHealth(1);
-                    if (!player.isAlive()) {
-                        System.out.println(player.getName() + " is out of the game");
-                    }
+                } else {
+                    System.out.println(player.getName() + " defended against Indians attack.");
                 }
             }
         }

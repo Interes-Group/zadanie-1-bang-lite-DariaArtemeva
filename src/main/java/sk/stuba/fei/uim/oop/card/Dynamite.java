@@ -4,6 +4,7 @@ import sk.stuba.fei.uim.oop.board.Board;
 import sk.stuba.fei.uim.oop.player.Player;
 
 import java.util.List;
+import java.util.Random;
 
 public class Dynamite extends Card {
     public Dynamite() {
@@ -11,12 +12,14 @@ public class Dynamite extends Card {
     }
 
     @Override
-    public void use(Player currentPlayer, Player targetPlayer, Board board, List<Player> players) {
-        if (targetPlayer.hasDynamite()) {
-            System.out.println(targetPlayer.getName() + " already has a Dynamite card in front of them.");
-        } else {
-            targetPlayer.setDynamite(this);
-            System.out.println(currentPlayer.getName() + " put " + targetPlayer.getName() + " in front of Dynamite.");
-        }
+    public boolean requireTarget() {
+        return true;
+    }
+
+    @Override
+    public void use(Player user, Player target, Board board, List<Player> players) {
+        target.setDynamite(this);
+        System.out.println(target.getName() + " now has Dynamite in front of him.");
     }
 }
+

@@ -5,23 +5,26 @@ import sk.stuba.fei.uim.oop.player.Player;
 
 import java.util.List;
 
+
 public class Barrel extends Card {
+
     public Barrel() {
         super("Barrel");
     }
 
     @Override
-    public void use(Player currentPlayer, Player targetPlayer, Board board, List<Player> players) {
-        if (currentPlayer.hasBarrel()) {
-            System.out.println(currentPlayer.getName() + " already has a Barrel card in front of them.");
-        } else {
-            currentPlayer.setBarrel(this);
-            System.out.println(currentPlayer.getName() + " put a Barrel card in front of them.");
-        }
+    public boolean requireTarget() {
+        return false;
+    }
+
+    @Override
+    public void use(Player user, Player target, Board board, List<Player> players) {
+        user.setBarrel(this);
+        System.out.println(user.getName() + " has placed a Barrel card in front of him.");
     }
 
     public boolean blocksShot() {
-        int chance = (int) (Math.random() * 4);
-        return chance == 0;
+        int roll = (int) (Math.random() * 4);
+        return roll == 0;
     }
 }

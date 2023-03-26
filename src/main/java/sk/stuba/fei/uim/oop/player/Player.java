@@ -3,15 +3,16 @@ package sk.stuba.fei.uim.oop.player;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import sk.stuba.fei.uim.oop.card.Barrel;
 import sk.stuba.fei.uim.oop.card.Card;
 import sk.stuba.fei.uim.oop.card.Dynamite;
 import sk.stuba.fei.uim.oop.card.Prison;
 
 public class Player {
-    private  String name;
+    private final String name;
     private int health;
-    private List<Card> hand;
+    private final List<Card> hand;
     private Prison prison;
     private Dynamite dynamite;
     private Barrel barrel;
@@ -58,9 +59,6 @@ public class Player {
         hand.remove(card);
     }
 
-    public Dynamite getDynamite() {
-        return dynamite;
-    }
 
     public void setDynamite(Dynamite dynamite) {
         this.dynamite = dynamite;
@@ -85,27 +83,41 @@ public class Player {
         return barrel != null;
     }
 
-    public void removeBarrel() {
-        barrel = null;
-    }
     public boolean isAlive() {
         return health > 0;
     }
-    public Prison getPrison(){
-        return prison;
-    }
 
-    public void setPrison(Prison prison) {
-        this.prison = prison;
-    }
-    public boolean hasPrison() {
-        return prison != null;
-    }
 
     public void removePrison() {
         prison = null;
     }
 
+
+    private boolean inPrison;
+
+    public boolean isInPrison() {
+        return inPrison;
+    }
+
+    public void setInPrison(boolean inPrison) {
+        this.inPrison = inPrison;
+    }
+    public boolean defendAgainstIndians() {
+        Card cardToDiscard = null;
+        for (Card card : hand) {
+            if (card.getName().equals("BANG")) {
+                cardToDiscard = card;
+                break;
+            }
+        }
+
+        if (cardToDiscard != null) {
+            hand.remove(cardToDiscard);
+            return true;
+        }
+
+        return false;
+    }
     @Override
     public String toString() {
 

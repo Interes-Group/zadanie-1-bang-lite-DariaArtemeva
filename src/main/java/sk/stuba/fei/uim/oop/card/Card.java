@@ -16,6 +16,9 @@ public abstract class Card {
 
         return name;
     }
+    public boolean requireTarget() {
+        return false;
+    }
 
     public abstract void use(Player currentPlayer, Player targetPlayer, Board board, List<Player> players);}
 
